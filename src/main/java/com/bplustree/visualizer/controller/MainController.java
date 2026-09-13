@@ -94,6 +94,8 @@ public final class MainController {
     private final StackPane view = new StackPane();
     private final VBox stepsBox = new VBox(2);
     private final ScrollPane stepsScroll = new ScrollPane(stepsBox);
+    private final FlowPane keySequenceFlow = new FlowPane(6, 6);
+    private List<Integer> lastSequenceKeys = List.of();
     private Label stepsPlaceholder;
     private final Map<String, Label> statisticValues = new LinkedHashMap<>();
     private final VBox emptyContent = new VBox();
@@ -263,10 +265,62 @@ public final class MainController {
         StackPane canvasStack = new StackPane(scrollPane, buildEmptyState());
         BorderPane treePanel = new BorderPane(canvasStack);
         treePanel.setTop(canvasHeader);
+        treePanel.setBottom(buildKeySequenceBar());
         treePanel.setMinWidth(580);
         treePanel.setMinHeight(0);
         treePanel.getStyleClass().add("tree-panel");
         return treePanel;
+    }
+
+    private Node buildKeySequenceBar() {
+        keySequenceFlow.getStyleClass().add("key-sequence-flow");
+        ScrollPane scroll = new ScrollPane(keySequenceFlow);
+        scroll.getStyleClass().add("key-sequence-scroll");
+        scroll.setFitToWidth(true);
+        scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scroll.setMinHeight(30);
+        scroll.setPrefHeight(30);
+        scroll.setMaxHeight(92);
+        keySequenceFlow.heightProperty().addListener(
+            (observable, oldHeight, newHeight) -> scroll.setPrefHeight(
+                Math.min(92, Math.max(30, newHeight.doubleValue() + 2))
+            )
+        );
+
+        VBox bar = new VBox(scroll);
+        bar.getStyleClass().add("key-sequence-bar");
+        return bar;
+    }
+
+    private void refreshKeySequence(List<Integer> keys) {
+        if (keys.equals(lastSequenceKeys)) {
+            return;
+        }
+        lastSequenceKeys = List.copyOf(keys);
+        keySequenceFlow.getChildren().clear();
+        if (keys.isEmpty()) {
+            Label empty = new Label("Chưa có khóa nào.");
+            empty.getStyleClass().add("key-sequence-empty");
+            keySequenceFlow.getChildren().add(empty);
+            return;
+        }
+        for (int key : keys) {
+            Label pill = new Label(Integer.toString(key));
+            pill.getStyleClass().add("key-pill");
+            keySequenceFlow.getChildren().add(pill);
+        }
+    }
+
+    private static List<Integer> snapshotKeys(TreeSnapshot snapshot) {
+        List<Integer> keys = new ArrayList<>();
+        for (NodeSnapshot node : snapshot.nodes()) {
+            if (node.leaf()) {
+                keys.addAll(node.keys());
+            }
+        }
+        keys.sort(Integer::compareTo);
+        return keys;
     }
 
     private VBox buildEmptyState() {
@@ -1150,7 +1204,8 @@ public final class MainController {
             statistics.keyCount(),
             statistics.nodeCount(),
             statistics.internalNodeCount(),
-            statistics.leafNodeCount()
+            statistics.leafNodeCount(),
+            service.getTree().keys()
         );
     }
 
@@ -1165,7 +1220,8 @@ public final class MainController {
             snapshot.size(),
             snapshot.nodes().size(),
             snapshot.nodes().size() - leafNodes,
-            leafNodes
+            leafNodes,
+            snapshotKeys(snapshot)
         );
     }
 
@@ -1174,7 +1230,8 @@ public final class MainController {
         int keyCount,
         int nodeCount,
         int internalNodeCount,
-        int leafNodeCount
+        int leafNodeCount,
+        List<Integer> keys
     ) {
         statisticValues.get("height").setText(Integer.toString(height));
         statisticValues.get("keys").setText(Integer.toString(keyCount));
@@ -1186,6 +1243,7 @@ public final class MainController {
         statisticValues
             .get("comparisons")
             .setText(Integer.toString(lastComparisons));
+        refreshKeySequence(keys);
     }
 
     private int snapshotHeight(TreeSnapshot snapshot) {

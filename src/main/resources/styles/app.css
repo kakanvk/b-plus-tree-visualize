@@ -198,9 +198,43 @@
 .tree-scroll,
 .tree-scroll > .viewport,
 .tree-canvas {
-    -fx-background-radius: 0 0 10 10;
+    -fx-background-radius: 0;
 }
 .tree-panel { -fx-border-insets: 0; }
+
+/* Key sequence bar (sticky bottom of the tree panel) */
+.key-sequence-bar {
+    -fx-padding: 8 16 10 16;
+    -fx-background-color: -app-surface-muted;
+    -fx-background-radius: 0 0 10 10;
+    -fx-border-color: -app-border transparent transparent transparent;
+}
+.key-sequence-scroll,
+.key-sequence-scroll > .viewport {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+.key-sequence-scroll {
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+    -fx-fit-to-width: true;
+}
+.key-sequence-flow { -fx-background-color: transparent; }
+.key-pill {
+    -fx-background-color: -app-surface;
+    -fx-background-radius: 6;
+    -fx-border-color: -app-border-strong;
+    -fx-border-radius: 6;
+    -fx-padding: 3 9;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #24324a;
+}
+.key-sequence-empty {
+    -fx-font-size: 12px;
+    -fx-font-style: italic;
+    -fx-text-fill: -app-text-subtle;
+}
 
 /* Empty state */
 .empty-state { -fx-padding: 28; }
