@@ -1,96 +1,96 @@
-# B+ Tree Visualizer
+# Trình trực quan hóa cây B+
 
-A production-style JavaFX desktop application for learning and presenting B+ Tree operations. The application separates the verified data structure from operation tracing, layout, rendering, and playback so every algorithm step can be explained independently.
+Ứng dụng desktop JavaFX phong cách production để học và thuyết trình các thao tác trên cây B+. Ứng dụng tách riêng cấu trúc dữ liệu đã kiểm chứng khỏi việc truy vết thao tác, dàn layout, render và phát lại, nhờ đó mỗi bước thuật toán đều có thể giải thích độc lập.
 
-## Requirements
+## Yêu cầu
 
-- Java 21 (set `JAVA_HOME` to a JDK 21 installation; Maven must report Java 21 in `mvn -version`)
+- Java 21 (đặt `JAVA_HOME` trỏ tới bản cài JDK 21; `mvn -version` phải báo Java 21)
 - Maven 3.9+
 
-JavaFX 21 and AtlantaFX 2.1.0 are resolved from Maven Central. A separate JavaFX SDK or manual module-path configuration is not required. The interface uses AtlantaFX Primer Light as its base theme and project-specific CSS for its visual identity.
+JavaFX 21 và AtlantaFX 2.1.0 được tải từ Maven Central. Không cần cài JavaFX SDK riêng hay cấu hình module-path thủ công. Giao diện dùng theme AtlantaFX Primer Light làm nền và CSS riêng của project cho bản sắc trực quan.
 
-## Run
+## Chạy
 
 ```bash
 mvn clean javafx:run
 ```
 
-## Build and test
+## Build và kiểm thử
 
 ```bash
 mvn clean test
 mvn clean package
 ```
 
-On Windows, `mvn clean package` also invokes Java 21 `jpackage` and creates a self-contained portable application at:
+Trên Windows, `mvn clean package` còn gọi `jpackage` của Java 21 và tạo ứng dụng portable tự chứa tại:
 
 ```text
 release/BPlusTreeVisualizer/BPlusTreeVisualizer.exe
 ```
 
-Run the executable directly or distribute the entire `BPlusTreeVisualizer` directory. Do not copy the `.exe` alone because it requires the adjacent `app` and `runtime` directories. `mvn verify` additionally produces a distributable archive at:
+Chạy trực tiếp file thực thi hoặc phân phối toàn bộ thư mục `BPlusTreeVisualizer`. Không copy riêng file `.exe` vì nó cần các thư mục `app` và `runtime` nằm cạnh bên. `mvn verify` sẽ tạo thêm gói phân phối tại:
 
 ```text
 target/BPlusTreeVisualizer-1.0.0-windows.zip
 ```
 
-Note: `jpackage` refuses to overwrite an existing output directory, so delete `release/` first if a previous build exists (and close the app, since Windows locks its files while running).
+Lưu ý: `jpackage` không ghi đè thư mục đầu ra đã tồn tại, vì vậy hãy xóa `release/` trước khi build lại (và tắt app vì Windows khóa file khi app đang chạy).
 
-## Features
+## Tính năng
 
-- Insert and reject duplicate integer keys
-- Search with comparison and path steps
-- Delete with redistribution/borrow, merge, separator repair, and root shrink
-- Median-first rebalance that never worsens height or node count
-- Configurable B+ Tree order from 3 to 8
-- Automatic non-overlapping subtree layout
-- Distinct internal nodes, leaf nodes, parent edges, and linked-leaf edges
-- Direct algorithm checkpoints for traversal, insert, split, borrow, merge, and root changes
-- Immutable per-step tree snapshots with stable node IDs and exact edge/key highlighting
-- Numbered step list with click-to-jump, deterministic play, pause, previous, next, restart, and speed controls
-- Skip-animation switch that jumps straight to the final frame
-- Sticky bottom bar showing the current sorted key sequence
-- Inline insertion input with full signed integer validation
-- 12 curated datasets for splits, merges, negative and long keys
-- Random insertion by quantity, with an advanced custom numeric range
-- Inline validation feedback, empty states, statistics, and comparison count
-- Team info dialog with the algorithm reference source
-- Full invariant validation in the algorithm layer
-- Opens maximized on launch
+- Chèn khóa số nguyên và từ chối khóa trùng
+- Tìm kiếm với các bước so sánh và đường đi
+- Xóa với tái phân phối/mượn, gộp nút, sửa khóa phân cách và co gốc
+- Cân bằng median-first, không bao giờ làm tăng chiều cao hay số nút
+- Tùy chỉnh bậc (order) cây B+ từ 3 đến 8
+- Tự động dàn layout các cây con không chồng lấn
+- Phân biệt nút trong, nút lá, cạnh nút con và cạnh liên kết nút lá
+- Checkpoint thuật toán trực tiếp cho duyệt cây, chèn, tách, mượn, gộp và đổi gốc
+- Snapshot cây bất biến theo từng bước, ID nút ổn định, highlight đúng cạnh/khóa
+- Danh sách bước đánh số, bấm để nhảy tới bước, phát, tạm dừng, lùi, tới, chạy lại và chỉnh tốc độ
+- Switch bỏ qua animation để nhảy thẳng tới khung hình cuối
+- Thanh sticky dưới đáy hiển thị dãy khóa đã sắp xếp hiện tại
+- Ô nhập chèn inline, kiểm tra số nguyên có dấu đầy đủ
+- 12 bộ dữ liệu mẫu cho tách, gộp, số âm và khóa dài
+- Chèn ngẫu nhiên theo số lượng, kèm tùy chọn khoảng số nâng cao
+- Phản hồi kiểm tra inline, empty state, thống kê và đếm số phép so sánh
+- Dialog thông tin nhóm kèm nguồn tham khảo thuật toán
+- Kiểm tra toàn bộ bất biến ngay trong tầng thuật toán
+- Mở app là full màn hình
 
-## Project structure
+## Cấu trúc project
 
 ```text
 src/main/java/com/bplustree/visualizer/
-├── model/          B+ Tree nodes, mutations, invariants, and statistics
-├── service/        Operations and educational event generation
-├── event/          UI-independent animation event contract
-├── visualization/ Layout engine, JavaFX nodes/edges, renderer, playback
-├── controller/     Dialog input, validation, responsive UI coordination
-└── ui/             JavaFX application launchers
+├── model/          Nút cây B+, đột biến, bất biến và thống kê
+├── service/        Thao tác và sinh event giáo dục
+├── event/          Hợp đồng event animation độc lập UI
+├── visualization/ Engine dàn layout, node/cạnh JavaFX, renderer, phát lại
+├── controller/     Nhập liệu dialog, kiểm tra, điều phối UI
+└── ui/             Điểm khởi chạy ứng dụng JavaFX
 ```
 
-The tokenized stylesheet is stored separately at `src/main/resources/styles/app.css`. Algorithm tests live under `src/test/java` and intentionally do not depend on JavaFX.
+Stylesheet token hóa nằm riêng tại `src/main/resources/styles/app.css`. Test thuật toán nằm dưới `src/test/java` và cố ý không phụ thuộc JavaFX.
 
-Animation steps are captured synchronously inside the B+ Tree algorithm, following the checkpoint boundaries demonstrated by `ref/BPlusTree.js`. Each event stores an immutable structural snapshot, its exact node/key/edge target, and the cumulative comparison count. Playback therefore seeks directly to a snapshot and never replays or reverses mutations against the canonical tree.
+Các bước animation được ghi lại đồng bộ bên trong thuật toán cây B+, theo ranh giới checkpoint được minh họa bởi `ref/BPlusTree.js`. Mỗi event lưu snapshot cấu trúc bất biến, mục tiêu node/khóa/cạnh chính xác và số phép so sánh tích lũy. Nhờ đó phát lại nhảy thẳng tới snapshot mà không bao giờ phát lại hay đảo ngược đột biến trên cây chuẩn.
 
-## B+ Tree overview
+## Tổng quan cây B+
 
-A B+ Tree is a balanced multi-way search tree designed to keep its height small.
+Cây B+ là cây tìm kiếm đa phân nhánh cân bằng, được thiết kế để giữ chiều cao nhỏ.
 
-- **Internal nodes** contain separator keys and child pointers. In this implementation, a separator equals the smallest key in its right child subtree.
-- **Leaf nodes** contain every stored key in sorted order. Leaves are connected in both directions, making sequential access efficient.
-- **Order** is the maximum number of children in an internal node. A leaf stores at most `order - 1` keys.
-- **Split** occurs after overflow. A full node is divided and a separator is copied into its parent; splitting can cascade to a new root.
-- **Redistribution** borrows a key or child from a sibling when deletion causes underflow and that sibling has spare occupancy.
-- **Merge** combines siblings when neither can lend. This can cascade upward and may shrink the root.
+- **Nút trong** chứa khóa phân cách và con trỏ nút con. Trong cài đặt này, khóa phân cách bằng khóa nhỏ nhất của cây con bên phải.
+- **Nút lá** chứa toàn bộ khóa đã lưu theo thứ tự tăng dần. Các lá nối với nhau hai chiều nên truy cập tuần tự rất hiệu quả.
+- **Bậc (order)** là số nút con tối đa của một nút trong. Nút lá chứa tối đa `order - 1` khóa.
+- **Tách (split)** xảy ra khi tràn. Nút đầy được chia đôi và một khóa phân cách được sao chép lên nút cha; tách có thể lan tới tận gốc mới.
+- **Tái phân phối** mượn khóa hoặc nút con từ nút anh em khi xóa gây thiếu hụt mà anh em còn dư chỗ.
+- **Gộp (merge)** kết hợp các anh em khi không bên nào cho mượn được. Việc này có thể lan lên trên và làm co gốc.
 
-Search, insert, and delete take `O(log n)` tree navigation time.
+Tìm kiếm, chèn và xóa tốn thời gian duyệt cây `O(log n)`.
 
-## Demonstration tips
+## Mẹo demo
 
-1. Choose **Tách nút · nhiều tầng**, then insert additional nearby keys to show leaf and internal splits.
-2. Choose **Gộp nút · xóa khóa 30**, then delete `30` to demonstrate underflow repair.
-3. Use **Tạm dừng** and the previous/next controls while presenting each generated algorithm step.
-4. Turn on **Bỏ qua animation** to jump straight to the result when steps are already understood.
-5. Drag the visualization surface or use its scrollbars when a large tree exceeds the viewport.
+1. Chọn **Tách nút · nhiều tầng**, rồi chèn thêm các khóa lân cận để thấy tách nút lá và nút trong.
+2. Chọn **Gộp nút · xóa khóa 30**, rồi xóa `30` để minh họa sửa thiếu hụt.
+3. Dùng **Tạm dừng** và các nút lùi/tới khi thuyết trình từng bước thuật toán.
+4. Bật **Bỏ qua animation** để nhảy thẳng tới kết quả khi đã hiểu các bước.
+5. Kéo mặt vẽ trực quan hoặc dùng thanh cuộn khi cây lớn vượt khung nhìn.
