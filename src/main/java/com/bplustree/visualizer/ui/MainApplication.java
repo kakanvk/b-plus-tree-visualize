@@ -14,7 +14,7 @@ public final class MainApplication extends Application {
     @Override
     public void start(Stage stage) {
         Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
-        MainController controller = new MainController();
+        MainController controller = new MainController(getHostServices());
         Screen screen = Screen.getPrimary();
         Rectangle2D visualBounds = screen.getVisualBounds();
         double availableWidth = visualBounds.getWidth() / screen.getOutputScaleX();

@@ -22,6 +22,7 @@ import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
+import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -38,6 +39,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
@@ -48,6 +50,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.FlowPane;
@@ -83,10 +86,15 @@ public final class MainController {
         "M4 3 H7 V13 H4 Z M9 3 H12 V13 H9 Z";
     private static final String ICON_PREVIOUS = "M10 3 L5 8 L10 13";
     private static final String ICON_NEXT = "M6 3 L11 8 L6 13";
+    private static final String ICON_INFO =
+        "M8 1.5 A6.5 6.5 0 1 0 8 14.5 A6.5 6.5 0 1 0 8 1.5 M8 7.4 V11.2 M8 5 V5.1";
+    private static final String ALGORITHM_SOURCE_URL =
+        "https://cmps-people.ok.ubc.ca/ylucet/DS/BPlusTree.html";
 
     private final BPlusTreeService service = new BPlusTreeService(
         DEFAULT_ORDER
     );
+    private final HostServices hostServices;
     private final TreeRenderer renderer = new TreeRenderer();
     private final AnimationManager animationManager = new AnimationManager(
         this::showAnimationEvent
@@ -96,7 +104,7 @@ public final class MainController {
     private final ScrollPane stepsScroll = new ScrollPane(stepsBox);
     private final FlowPane keySequenceFlow = new FlowPane(6, 6);
     private List<Integer> lastSequenceKeys = List.of();
-    private Label stepsPlaceholder;
+    private VBox stepsPlaceholder;
     private final Map<String, Label> statisticValues = new LinkedHashMap<>();
     private final VBox emptyContent = new VBox();
     private final Label toast = new Label();
@@ -108,7 +116,8 @@ public final class MainController {
     private int lastComparisons;
     private List<Integer> insertionOrder = new ArrayList<>();
 
-    public MainController() {
+    public MainController(HostServices hostServices) {
+        this.hostServices = hostServices;
         configureOrderSelector();
 
         BorderPane shell = new BorderPane();
@@ -184,6 +193,11 @@ public final class MainController {
             "ghost-button",
             this::resetTree
         );
+        Button about = new Button(null, icon(ICON_INFO));
+        about.getStyleClass().addAll("ghost-button", "icon-button");
+        about.setAccessibleText("Thông tin nhóm");
+        about.setTooltip(new Tooltip("Thông tin nhóm"));
+        about.setOnAction(event -> showAboutDialog());
 
         FlowPane actions = new FlowPane(
             Orientation.HORIZONTAL,
@@ -195,7 +209,8 @@ public final class MainController {
             search,
             samples,
             balance,
-            reset
+            reset,
+            about
         );
         actions.setAlignment(Pos.CENTER_RIGHT);
         actions.setPrefWrapLength(760);
@@ -217,7 +232,8 @@ public final class MainController {
                 search,
                 samples,
                 balance,
-                reset
+                reset,
+                about
             )
         );
 
@@ -355,7 +371,10 @@ public final class MainController {
         operationControls.addAll(List.of(insert, sample));
         HBox actions = new HBox(8, insert, sample);
         actions.setAlignment(Pos.CENTER);
-        emptyContent.getChildren().setAll(illustration, title, copy, actions);
+        VBox card = new VBox(10, illustration, title, copy, actions);
+        card.setAlignment(Pos.CENTER);
+        card.getStyleClass().add("empty-card");
+        emptyContent.getChildren().setAll(card);
         emptyContent.setSpacing(10);
         emptyContent.setAlignment(Pos.CENTER);
         emptyContent.getStyleClass().add("empty-state");
@@ -365,13 +384,7 @@ public final class MainController {
     private VBox buildSidebar() {
         Label stepsTitle = new Label("Các bước thuật toán");
         stepsTitle.getStyleClass().add("section-title");
-        Label stepsHint = new Label(
-            "Theo dõi quyết định của thuật toán theo từng bước."
-        );
-        stepsHint.getStyleClass().add("section-caption");
-        stepsPlaceholder = new Label("Thực hiện một thao tác để xem các bước.");
-        stepsPlaceholder.getStyleClass().add("section-caption");
-        stepsPlaceholder.setWrapText(true);
+        stepsPlaceholder = buildStepsPlaceholder();
         stepsScroll.getStyleClass().add("step-scroll");
         stepsScroll.setFitToWidth(true);
         stepsScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
@@ -382,10 +395,10 @@ public final class MainController {
         VBox stepSection = new VBox(
             4,
             stepsTitle,
-            stepsHint,
             stepsScroll,
             stepsPlaceholder
         );
+        VBox.setVgrow(stepsPlaceholder, Priority.ALWAYS);
         stepSection.getStyleClass().add("sidebar-section");
 
         GridPane statistics = new GridPane();
@@ -652,6 +665,7 @@ public final class MainController {
                         indicator.setText(
                             stepIndicatorText(
                                 animationManager.getEvents().get(i),
+                                i,
                                 state
                             )
                         );
@@ -818,6 +832,22 @@ public final class MainController {
     }
 
 
+    private VBox buildStepsPlaceholder() {
+        SVGPath stepsGlyph = icon("M2 4 H14 M2 8 H14 M2 12 H9");
+        stepsGlyph.getStyleClass().add("empty-glyph");
+        StackPane illustration = new StackPane(stepsGlyph);
+        illustration.getStyleClass().add("steps-empty-illustration");
+        Label title = new Label("Chưa có bước nào");
+        title.getStyleClass().add("steps-empty-title");
+        Label desc = new Label("Thực hiện một thao tác để xem các bước.");
+        desc.getStyleClass().add("steps-empty-desc");
+        desc.setWrapText(true);
+        VBox placeholder = new VBox(8, illustration, title, desc);
+        placeholder.setAlignment(Pos.CENTER);
+        placeholder.getStyleClass().add("steps-empty");
+        return placeholder;
+    }
+
     private void populateSteps(List<TreeAnimationEvent> events) {
         stepsBox.getChildren().clear();
         for (int i = 0; i < events.size(); i++) {
@@ -841,7 +871,7 @@ public final class MainController {
                 : index == current
                   ? "active"
                   : "pending";
-        Label indicator = new Label(stepIndicatorText(item, state));
+        Label indicator = new Label(stepIndicatorText(item, index, state));
         indicator
             .getStyleClass()
             .addAll("step-indicator", "step-indicator-" + state);
@@ -855,7 +885,7 @@ public final class MainController {
         detail.getStyleClass().add("step-detail");
         VBox copy = new VBox(2, title, detail);
         copy.setFillWidth(true);
-        HBox row = new HBox(10, indicator, copy);
+        HBox row = new HBox(6, indicator, copy);
         row.setAlignment(Pos.TOP_LEFT);
         row.getStyleClass().addAll("step-row", "step-" + state);
         row.setOnMouseClicked(e -> animationManager.jumpTo(index));
@@ -864,15 +894,14 @@ public final class MainController {
         return row;
     }
 
-    private String stepIndicatorText(TreeAnimationEvent event, String state) {
+    private String stepIndicatorText(TreeAnimationEvent event, int index, String state) {
         if (event.type() == EventType.ERROR) {
             return "×";
         }
-        return switch (state) {
-            case "completed" -> "✓";
-            case "active" -> "●";
-            default -> "○";
-        };
+        if ("active".equals(state)) {
+            return "●";
+        }
+        return Integer.toString(index + 1);
     }
 
     private void rebalanceTree() {
@@ -893,6 +922,34 @@ public final class MainController {
         insertionOrder = new ArrayList<>();
         clearTimelineAndRenderLive();
         showToast("Đã đặt lại cây và trạng thái mô phỏng", false);
+    }
+
+    private void showAboutDialog() {
+        Dialog<Void> dialog = createDialog("Thông tin nhóm");
+        Label membersTitle = controlLabel("Thành viên nhóm");
+        VBox members = new VBox(
+            4,
+            aboutMemberLabel("Cao Ka Ka"),
+            aboutMemberLabel("Lê Văn Dư"),
+            aboutMemberLabel("Thạch Ngọc Giàu")
+        );
+        Label sourceTitle = controlLabel("Nguồn thuật toán");
+        Hyperlink source = new Hyperlink(ALGORITHM_SOURCE_URL);
+        source.setWrapText(true);
+        source.setOnAction(event -> hostServices.showDocument(ALGORITHM_SOURCE_URL));
+        VBox content = new VBox(8, membersTitle, members, sourceTitle, source);
+        dialog.getDialogPane().setContent(content);
+        ButtonType close = new ButtonType("Đóng", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().setAll(close);
+        Node closeButton = dialog.getDialogPane().lookupButton(close);
+        closeButton.getStyleClass().add("primary-button");
+        dialog.showAndWait();
+    }
+
+    private static Label aboutMemberLabel(String name) {
+        Label label = new Label("•  " + name);
+        label.getStyleClass().add("about-member");
+        return label;
     }
 
     private MenuButton buildSamplesMenu() {
@@ -1200,7 +1257,9 @@ public final class MainController {
         renderer.render(event);
         lastComparisons = event.comparisons();
         updateInformation(event.snapshot());
-        updateEmptyState(event.snapshot().isEmpty());
+        // Transient empty snapshots (e.g. mid-rebalance rebuild) must not
+        // flash the empty state; only the final frame may show it.
+        updateEmptyState(event.snapshot().isEmpty() && animationManager.isAtEnd());
     }
 
     private void updateInformation() {

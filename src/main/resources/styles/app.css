@@ -245,6 +245,12 @@
 
 /* Empty state */
 .empty-state { -fx-padding: 28; }
+.empty-card {
+    -fx-background-color: -app-surface-muted;
+    -fx-background-radius: 14;
+    -fx-padding: 34 30;
+    -fx-max-width: 520;
+}
 .empty-illustration {
     -fx-background-color: -app-primary-soft;
     -fx-background-radius: 16;
@@ -270,13 +276,14 @@
 
 /* Sidebar */
 .sidebar { -fx-padding: 0; }
-.sidebar-section { -fx-padding: 16; }
+.sidebar-section { -fx-padding: 12 16 12 16; }
 .sidebar-info-scroll,
 .sidebar-info-scroll > .viewport {
     -fx-background-color: transparent;
     -fx-background: transparent;
 }
 .sidebar-info-scroll { -fx-border-color: transparent; }
+.sidebar > .separator { -fx-padding: 0; }
 .sidebar > .separator .line, .sidebar-section > .separator .line {
     -fx-border-color: -app-border;
     -fx-border-width: 1 0 0 0;
@@ -296,7 +303,7 @@
 }
 .step-list {
     -fx-background-color: transparent;
-    -fx-padding: 7 0 0 0;
+    -fx-padding: 12 0 0 0;
 }
 .step-row {
     -fx-padding: 8 9;
@@ -318,13 +325,37 @@
 .step-pending .step-title,
 .step-pending .step-detail { -fx-text-fill: -app-text-subtle; }
 .step-indicator {
-    -fx-min-width: 16;
+    -fx-min-width: 18;
     -fx-font-size: 12px;
     -fx-font-weight: 700;
 }
-.step-indicator-completed { -fx-text-fill: -app-success; }
+.step-indicator-completed { -fx-text-fill: -app-text-secondary; }
 .step-indicator-active { -fx-text-fill: -app-primary; }
 .step-indicator-pending { -fx-text-fill: -app-text-subtle; }
+.steps-empty {
+    -fx-background-color: -app-surface-muted;
+    -fx-background-radius: 10;
+    -fx-padding: 22 14;
+    -fx-alignment: center;
+}
+.steps-empty-illustration {
+    -fx-background-color: -app-primary-soft;
+    -fx-background-radius: 12;
+    -fx-min-width: 44;
+    -fx-min-height: 44;
+    -fx-max-width: 44;
+    -fx-max-height: 44;
+}
+.steps-empty-title {
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-text-fill: -app-text;
+}
+.steps-empty-desc {
+    -fx-font-size: 11.5px;
+    -fx-text-fill: -app-text-secondary;
+    -fx-text-alignment: center;
+}
 .statistics-grid { -fx-padding: 2 0 0 0; }
 .stat-card {
     -fx-background-color: -app-surface-muted;
@@ -430,6 +461,11 @@
     -fx-border-color: -app-primary;
 }
 .dialog-error { -fx-font-size: 11.5px; -fx-text-fill: -app-danger; }
+.about-member {
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-text-fill: -app-text;
+}
 .dialog-danger-button {
     -fx-background-color: -app-danger;
     -fx-border-color: -app-danger;
