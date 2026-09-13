@@ -52,22 +52,6 @@ public final class BPlusTreeService {
                 trace.result() ? List.of(key) : List.of(), trace.comparisons());
     }
 
-    public synchronized OperationResult rangeSearch(int fromInclusive, int toInclusive) {
-        OperationTrace<List<Integer>> trace = tree.rangeSearchTraced(fromInclusive, toInclusive);
-        boolean valid = fromInclusive <= toInclusive;
-        String message;
-        if (!valid) {
-            message = "Giá trị đầu khoảng không được lớn hơn giá trị cuối khoảng.";
-        } else if (trace.result().isEmpty()) {
-            message = "Không tìm thấy khóa nào trong đoạn [" + fromInclusive
-                    + ", " + toInclusive + "].";
-        } else {
-            message = "Đã tìm thấy " + trace.result().size() + " khóa trong đoạn ["
-                    + fromInclusive + ", " + toInclusive + "].";
-        }
-        return result(valid, message, trace.events(), trace.result(), trace.comparisons());
-    }
-
     /**
      * Rebuilds the canonical tree using median-first insertion.
      *

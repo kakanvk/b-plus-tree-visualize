@@ -152,29 +152,6 @@ class BPlusTreeTraceTest {
     }
 
     @Test
-    void rangeStopsBeforeLeafWhoseMinimumExceedsUpperBound() {
-        BPlusTree tree = new BPlusTree(3);
-        tree.insertAll(List.of(10, 20, 30, 40, 50, 60));
-
-        OperationTrace<List<Integer>> trace = tree.rangeSearchTraced(20, 20);
-
-        assertEquals(List.of(20), trace.result());
-        assertEquals(1, count(trace.events(), EventType.HIGHLIGHT_RANGE));
-        assertFalse(trace.events().stream().anyMatch(event ->
-                event.type() == EventType.TRAVERSE_EDGE
-                        && event.target().childIndex() == null));
-        TreeAnimationEvent rangeFrame = first(trace.events(), EventType.HIGHLIGHT_RANGE);
-        assertFalse(rangeFrame.target().relatedKeys().contains(30));
-        TreeAnimationEvent boundary = trace.events().stream()
-                .filter(event -> event.type() == EventType.COMPARE_KEY)
-                .filter(event -> event.title().equals("Kiểm tra giới hạn nút lá kế tiếp"))
-                .findFirst()
-                .orElseThrow();
-        assertTrue(boundary.detail().contains("không còn"));
-        assertEquals(boundary.comparisons(), trace.comparisons());
-    }
-
-    @Test
     void eventsCarryCumulativeComparisonCounts() {
         BPlusTree tree = new BPlusTree(3);
         tree.insertAll(List.of(10, 20, 30, 40, 50, 60));

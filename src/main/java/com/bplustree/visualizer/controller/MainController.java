@@ -70,7 +70,7 @@ public final class MainController {
         "M11.5 11.5 L15 15 M13 7 A6 6 0 1 1 1 7 A6 6 0 0 1 13 7";
     private static final String ICON_DELETE =
         "M3 4 H13 M5 4 V2 H11 V4 M5 6 V13 H11 V6";
-    private static final String ICON_RANGE =
+    private static final String ICON_LOGO =
         "M2 8 H14 M2 8 L5 5 M2 8 L5 11 M14 8 L11 5 M14 8 L11 11";
     private static final String ICON_SAMPLE =
         "M2 2 H7 V7 H2 Z M9 2 H14 V7 H9 Z M2 9 H7 V14 H2 Z M9 9 H14 V14 H9 Z";
@@ -136,7 +136,7 @@ public final class MainController {
     }
 
     private VBox buildHeader() {
-        SVGPath logoGlyph = icon(ICON_RANGE);
+        SVGPath logoGlyph = icon(ICON_LOGO);
         logoGlyph.getStyleClass().add("brand-glyph");
         StackPane mark = new StackPane(logoGlyph);
         mark.getStyleClass().add("brand-mark");
@@ -169,12 +169,6 @@ public final class MainController {
             "secondary-button",
             this::showSearchDialog
         );
-        Button range = actionButton(
-            "Tìm theo khoảng",
-            ICON_RANGE,
-            "secondary-button",
-            this::showRangeDialog
-        );
         MenuButton samples = buildSamplesMenu();
         Button balance = actionButton(
             "Cân bằng",
@@ -197,7 +191,6 @@ public final class MainController {
             insert,
             delete,
             search,
-            range,
             samples,
             balance,
             reset
@@ -220,7 +213,6 @@ public final class MainController {
                 insert,
                 delete,
                 search,
-                range,
                 samples,
                 balance,
                 reset
@@ -679,68 +671,6 @@ public final class MainController {
         );
     }
 
-    private void showRangeDialog() {
-        if (service.getTree().isEmpty()) {
-            showToast("Cây đang trống, chưa thể tìm theo khoảng", true);
-            return;
-        }
-        Dialog<IntRange> dialog = createDialog("Tìm kiếm theo khoảng");
-        TextField from = integerField("Giá trị bắt đầu");
-        TextField to = integerField("Giá trị kết thúc");
-        Label error = validationLabel();
-        GridPane fields = new GridPane();
-        fields.setHgap(12);
-        fields.setVgap(8);
-        ColumnConstraints column = new ColumnConstraints();
-        column.setPercentWidth(50);
-        fields.getColumnConstraints().addAll(column, column);
-        fields.add(controlLabel("Từ"), 0, 0);
-        fields.add(controlLabel("Đến"), 1, 0);
-        fields.add(from, 0, 1);
-        fields.add(to, 1, 1);
-        fields.add(error, 0, 2, 2, 1);
-        dialog.getDialogPane().setContent(fields);
-        ButtonType submitType = addDialogButtons(dialog, "Tìm kiếm", false);
-        Button submit = (Button) dialog
-            .getDialogPane()
-            .lookupButton(submitType);
-        submit.addEventFilter(ActionEvent.ACTION, event -> {
-            Optional<Integer> start = validateField(
-                from,
-                error,
-                "Nhập giá trị bắt đầu"
-            );
-            Optional<Integer> end = validateField(
-                to,
-                error,
-                "Nhập giá trị kết thúc"
-            );
-            if (start.isEmpty() || end.isEmpty()) {
-                event.consume();
-            } else if (start.get() > end.get()) {
-                error.setText(
-                    "Giá trị bắt đầu phải nhỏ hơn hoặc bằng giá trị kết thúc"
-                );
-                from.requestFocus();
-                event.consume();
-            }
-        });
-        dialog.setResultConverter(button ->
-            button == submitType
-                ? new IntRange(
-                      Integer.parseInt(from.getText()),
-                      Integer.parseInt(to.getText())
-                  )
-                : null
-        );
-        dialog.setOnShown(event -> Platform.runLater(from::requestFocus));
-        dialog
-            .showAndWait()
-            .ifPresent(range ->
-                runOperation(service.rangeSearch(range.from(), range.to()))
-            );
-    }
-
     private void showSingleValueDialog(
         String title,
         String fieldLabel,
@@ -992,17 +922,12 @@ public final class MainController {
                 )
             ),
             presetItem(
-                "08 · Tìm kiếm theo khoảng",
-                "Mẫu tìm theo khoảng",
-                List.of(12, 18, 21, 27, 32, 39, 43, 48, 54, 61, 67, 73, 80)
-            ),
-            presetItem(
-                "09 · Chẵn và lẻ xen kẽ",
+                "08 · Chẵn và lẻ xen kẽ",
                 "Mẫu chẵn lẻ",
                 List.of(2, 11, 4, 13, 6, 15, 8, 17, 10, 19, 12, 21)
             ),
             presetItem(
-                "10 · Cây sâu",
+                "09 · Cây sâu",
                 "Mẫu cây sâu",
                 List.of(
                     44,
@@ -1407,8 +1332,6 @@ public final class MainController {
         icon.getStyleClass().add("button-icon");
         return icon;
     }
-
-    private record IntRange(int from, int to) {}
 
     private record RandomRequest(int count, int minimum, int maximum) {}
 }

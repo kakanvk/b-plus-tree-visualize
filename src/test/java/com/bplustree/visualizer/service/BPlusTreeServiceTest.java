@@ -310,15 +310,11 @@ class BPlusTreeServiceTest {
     }
 
     @Test
-    void searchAndRangeAfterOperations() {
+    void searchAfterOperations() {
         BPlusTreeService service = new BPlusTreeService(4);
         service.getTree().insertAll(List.of(10, 20, 30, 40, 50));
 
         OperationResult searchResult = service.search(30);
         assertTrue(searchResult.success());
-
-        OperationResult rangeResult = service.rangeSearch(20, 40);
-        assertTrue(rangeResult.success());
-        assertEquals(3, rangeResult.values().size());
     }
 }

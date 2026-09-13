@@ -173,18 +173,6 @@ class BPlusTreeTest {
     }
 
     @Test
-    void performsInclusiveRangeSearchAcrossLeaves() {
-        BPlusTree tree = new BPlusTree(3);
-        tree.insertAll(List.of(50, 10, 70, 20, 60, 30, 40, 80));
-
-        assertEquals(List.of(20, 30, 40, 50, 60), tree.rangeSearch(20, 60));
-        assertEquals(List.of(10), tree.rangeSearch(1, 10));
-        assertEquals(List.of(), tree.rangeSearch(35, 35));
-        assertEquals(List.of(), tree.rangeSearch(90, 10));
-        assertEquals(tree.keys(), tree.rangeSearch(Integer.MIN_VALUE, Integer.MAX_VALUE));
-    }
-
-    @Test
     void reportsStatisticsAndResetsCleanly() {
         BPlusTree tree = new BPlusTree(5);
         tree.insertAll(range(1, 50));

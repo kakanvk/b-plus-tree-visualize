@@ -360,7 +360,7 @@ public final class TreeRenderer extends Pane {
         return switch (type) {
             case NODE_OVERFLOW, SPLIT_NODE, PROMOTE_KEY, CREATE_ROOT -> "split";
             case DELETE_KEY, NODE_UNDERFLOW, MERGE_NODE, BORROW_KEY, SHRINK_ROOT, ERROR -> "merge";
-            case MATCH_KEY, HIGHLIGHT_RANGE, COMPLETE -> "result";
+            case MATCH_KEY, COMPLETE -> "result";
             case VISIT_NODE, COMPARE_KEY, TRAVERSE_EDGE -> "searching";
             case INSERT_KEY, UPDATE_SEPARATOR -> "active";
         };

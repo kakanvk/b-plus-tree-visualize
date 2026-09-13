@@ -40,7 +40,6 @@ release/BPlusTreeVisualizer-1.0.0-windows.zip
 - Insert and reject duplicate integer keys
 - Search with comparison and path steps
 - Delete with redistribution/borrow, merge, separator repair, and root shrink
-- Inclusive range search through the linked leaf sequence
 - Configurable B+ Tree order from 3 to 8
 - Automatic non-overlapping subtree layout
 - Distinct internal nodes, leaf nodes, parent edges, and linked-leaf edges
@@ -48,7 +47,7 @@ release/BPlusTreeVisualizer-1.0.0-windows.zip
 - Immutable per-step tree snapshots with stable node IDs and exact edge/key highlighting
 - Deterministic play, pause, previous, next, restart, jump, and speed controls
 - Inline insertion input with full signed integer validation
-- 13 curated datasets for splits, merges, ranges, negative and long keys
+- 12 curated datasets for splits, merges, negative and long keys
 - Random insertion by quantity, with an advanced custom numeric range
 - Inline validation feedback, empty state, statistics, and comparison count
 - Full invariant validation in the algorithm layer
@@ -74,13 +73,13 @@ Animation steps are captured synchronously inside the B+ Tree algorithm, followi
 A B+ Tree is a balanced multi-way search tree designed to keep its height small.
 
 - **Internal nodes** contain separator keys and child pointers. In this implementation, a separator equals the smallest key in its right child subtree.
-- **Leaf nodes** contain every stored key in sorted order. Leaves are connected in both directions, making sequential and range access efficient.
+- **Leaf nodes** contain every stored key in sorted order. Leaves are connected in both directions, making sequential access efficient.
 - **Order** is the maximum number of children in an internal node. A leaf stores at most `order - 1` keys.
 - **Split** occurs after overflow. A full node is divided and a separator is copied into its parent; splitting can cascade to a new root.
 - **Redistribution** borrows a key or child from a sibling when deletion causes underflow and that sibling has spare occupancy.
 - **Merge** combines siblings when neither can lend. This can cascade upward and may shrink the root.
 
-Search, insert, and delete take `O(log n)` tree navigation time. A range query takes `O(log n + k)`, where `k` is the number of returned keys.
+Search, insert, and delete take `O(log n)` tree navigation time.
 
 ## Demonstration tips
 

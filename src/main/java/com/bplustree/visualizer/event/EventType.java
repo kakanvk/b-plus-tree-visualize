@@ -17,7 +17,6 @@ public enum EventType {
     UPDATE_SEPARATOR,
     CREATE_ROOT,
     SHRINK_ROOT,
-    HIGHLIGHT_RANGE,
     COMPLETE,
     ERROR
 }
