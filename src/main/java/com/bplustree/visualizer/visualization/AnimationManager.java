@@ -6,11 +6,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 import javafx.animation.PauseTransition;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.util.Duration;
 
@@ -25,6 +27,7 @@ public final class AnimationManager {
     private final ReadOnlyIntegerWrapper currentIndex = new ReadOnlyIntegerWrapper(this, "currentIndex", -1);
     private final ReadOnlyIntegerWrapper eventCount = new ReadOnlyIntegerWrapper(this, "eventCount", 0);
     private final ReadOnlyBooleanWrapper atEnd = new ReadOnlyBooleanWrapper(this, "atEnd", true);
+    private final BooleanProperty skipAnimation = new SimpleBooleanProperty(this, "skipAnimation", false);
     private final DoubleProperty speedMultiplier = new SimpleDoubleProperty(this, "speedMultiplier", 1.0);
 
     private List<TreeAnimationEvent> events = List.of();
@@ -61,6 +64,10 @@ public final class AnimationManager {
 
     public void play() {
         if (events.isEmpty() || isPlaying()) {
+            return;
+        }
+        if (isSkipAnimation()) {
+            showIndex(events.size() - 1);
             return;
         }
         if (currentIndex.get() >= events.size() - 1) {
@@ -141,6 +148,23 @@ public final class AnimationManager {
         return eventCount.getReadOnlyProperty();
     }
 
+    public boolean isSkipAnimation() {
+        return skipAnimation.get();
+    }
+
+    public void setSkipAnimation(boolean skip) {
+        skipAnimation.set(skip);
+        if (skip && !events.isEmpty()
+                && currentIndex.get() < events.size() - 1) {
+            pause();
+            showIndex(events.size() - 1);
+        }
+    }
+
+    public BooleanProperty skipAnimationProperty() {
+        return skipAnimation;
+    }
+
     public boolean isAtEnd() {
         return atEnd.get();
     }
@@ -171,6 +195,11 @@ public final class AnimationManager {
     private void scheduleNext() {
         stopPendingStep();
         if (!isPlaying() || currentIndex.get() >= events.size() - 1) {
+            playing.set(false);
+            return;
+        }
+        if (isSkipAnimation()) {
+            showIndex(events.size() - 1);
             playing.set(false);
             return;
         }

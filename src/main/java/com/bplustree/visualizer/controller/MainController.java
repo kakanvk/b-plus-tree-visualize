@@ -1,5 +1,6 @@
 package com.bplustree.visualizer.controller;
 
+import atlantafx.base.controls.ToggleSwitch;
 import com.bplustree.visualizer.event.EventType;
 import com.bplustree.visualizer.event.OperationResult;
 import com.bplustree.visualizer.event.TreeAnimationEvent;
@@ -496,6 +497,18 @@ public final class MainController {
         fast.getStyleClass().add("animation-muted");
         HBox speedBox = new HBox(8, speedLabel, slow, speed, fast);
         speedBox.setAlignment(Pos.CENTER);
+        Label skipLabel = new Label("Bỏ qua animation");
+        skipLabel.getStyleClass().add("animation-label");
+        ToggleSwitch skipSwitch = new ToggleSwitch();
+        skipSwitch.setAccessibleText("Bỏ qua animation");
+        skipSwitch.selectedProperty().addListener(
+            (observable, oldValue, selected) ->
+                animationManager.setSkipAnimation(selected)
+        );
+        HBox skipBox = new HBox(8, skipLabel, skipSwitch);
+        skipBox.setAlignment(Pos.CENTER);
+        HBox centerBox = new HBox(24, speedBox, skipBox);
+        centerBox.setAlignment(Pos.CENTER);
 
         Label status = new Label();
         status.getStyleClass().add("animation-status");
@@ -520,7 +533,7 @@ public final class MainController {
 
         BorderPane bar = new BorderPane();
         bar.setLeft(playback);
-        bar.setCenter(speedBox);
+        bar.setCenter(centerBox);
         bar.setRight(status);
         BorderPane.setAlignment(playback, Pos.CENTER_LEFT);
         BorderPane.setAlignment(status, Pos.CENTER_RIGHT);
