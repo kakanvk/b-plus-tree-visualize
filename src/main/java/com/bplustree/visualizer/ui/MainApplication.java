@@ -29,6 +29,7 @@ public final class MainApplication extends Application {
         stage.setScene(scene);
         stage.setMinWidth(Math.min(1024, availableWidth));
         stage.setMinHeight(Math.min(700, availableHeight));
+        stage.setMaximized(true);
         stage.show();
         if (screen.getOutputScaleX() > 1.0 || screen.getOutputScaleY() > 1.0) {
             stage.setX(visualBounds.getMinX());
