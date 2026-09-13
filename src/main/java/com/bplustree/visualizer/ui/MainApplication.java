@@ -29,14 +29,16 @@ public final class MainApplication extends Application {
         stage.setScene(scene);
         stage.setMinWidth(Math.min(1024, availableWidth));
         stage.setMinHeight(Math.min(700, availableHeight));
-        stage.setMaximized(true);
-        stage.show();
         if (screen.getOutputScaleX() > 1.0 || screen.getOutputScaleY() > 1.0) {
             stage.setX(visualBounds.getMinX());
             stage.setY(visualBounds.getMinY());
         } else {
             stage.centerOnScreen();
         }
+        stage.show();
+        // Maximize after show: maximizing before show leaves an unpainted
+        // strip on some Windows/GPU configurations.
+        stage.setMaximized(true);
     }
 
     public static void main(String[] args) {
