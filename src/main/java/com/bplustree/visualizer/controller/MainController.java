@@ -162,7 +162,7 @@ public final class MainController {
         Button delete = actionButton(
             "Xóa",
             ICON_DELETE,
-            "secondary-button",
+            "danger-button",
             this::showDeleteDialog
         );
         Button search = actionButton(
@@ -792,6 +792,12 @@ public final class MainController {
             ButtonBar.ButtonData.OK_DONE
         );
         dialog.getDialogPane().getButtonTypes().setAll(cancel, submit);
+        ButtonBar buttonBar = (ButtonBar) dialog
+            .getDialogPane()
+            .lookup(".button-bar");
+        if (buttonBar != null) {
+            buttonBar.setButtonOrder("L_E+U+FBXI_YNCOAHER");
+        }
         Node submitButton = dialog.getDialogPane().lookupButton(submit);
         submitButton
             .getStyleClass()

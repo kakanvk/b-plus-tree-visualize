@@ -115,6 +115,13 @@
     -fx-background-color: -app-surface-muted;
     -fx-border-color: #aeb9c8;
 }
+.danger-button {
+    -fx-background-color: -app-danger-soft;
+    -fx-border-color: -app-danger;
+    -fx-text-fill: -app-danger;
+}
+.danger-button .button-icon { -fx-stroke: -app-danger; }
+.danger-button:hover { -fx-background-color: #fbdfe2; }
 .ghost-button {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
