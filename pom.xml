@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.bplustree</groupId>
+    <artifactId>bplus-tree-visualizer</artifactId>
+    <version>1.0.0</version>
+    <name>B+ Tree Visualizer</name>
+    <description>Interactive JavaFX visualization of B+ Tree operations</description>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.release>21</maven.compiler.release>
+        <javafx.version>21.0.8</javafx.version>
+        <atlantafx.version>2.1.0</atlantafx.version>
+        <junit.version>5.11.4</junit.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.mkpaz</groupId>
+            <artifactId>atlantafx-base</artifactId>
+            <version>${atlantafx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <release>${maven.compiler.release}</release>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.5.2</version>
+                <configuration>
+                    <useModulePath>false</useModulePath>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.8</version>
+                <configuration>
+                    <mainClass>com.bplustree.visualizer.ui.MainApplication</mainClass>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.4.2</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.bplustree.visualizer.ui.Launcher</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>windows-app</id>
+            <activation>
+                <os>
+                    <family>Windows</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>3.8.1</version>
+                        <executions>
+                            <execution>
+                                <id>copy-runtime-dependencies</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>copy-dependencies</goal>
+                                </goals>
+                                <configuration>
+                                    <includeScope>runtime</includeScope>
+                                    <outputDirectory>${project.build.directory}/jpackage/input</outputDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>build-release</id>
+                                <phase>package</phase>
+                                <configuration>
+                                    <target>
+                                        <copy file="${project.build.directory}/${project.build.finalName}.jar"
+                                              todir="${project.build.directory}/jpackage/input"/>
+                                        <exec executable="${java.home}/bin/jpackage.exe" failonerror="true">
+                                            <arg value="--type"/>
+                                            <arg value="app-image"/>
+                                            <arg value="--dest"/>
+                                            <arg value="${project.basedir}/release"/>
+                                            <arg value="--input"/>
+                                            <arg value="${project.build.directory}/jpackage/input"/>
+                                            <arg value="--name"/>
+                                            <arg value="BPlusTreeVisualizer"/>
+                                            <arg value="--main-jar"/>
+                                            <arg value="${project.build.finalName}.jar"/>
+                                            <arg value="--main-class"/>
+                                            <arg value="com.bplustree.visualizer.ui.Launcher"/>
+                                            <arg value="--app-version"/>
+                                            <arg value="${project.version}"/>
+                                            <arg value="--vendor"/>
+                                            <arg value="B+ Tree Visualizer"/>
+                                            <arg value="--description"/>
+                                            <arg value="Trực quan hóa thuật toán cây B+"/>
+                                            <arg value="--java-options"/>
+                                            <arg value="-Dfile.encoding=UTF-8"/>
+                                        </exec>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>zip-release</id>
+                                <phase>verify</phase>
+                                <configuration>
+                                    <target>
+                                        <zip destfile="${project.build.directory}/BPlusTreeVisualizer-${project.version}-windows.zip"
+                                             basedir="${project.basedir}/release"
+                                             includes="BPlusTreeVisualizer/**"/>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>
