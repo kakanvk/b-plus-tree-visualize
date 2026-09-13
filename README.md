@@ -4,7 +4,7 @@ A production-style JavaFX desktop application for learning and presenting B+ Tre
 
 ## Requirements
 
-- Java 21
+- Java 21 (set `JAVA_HOME` to a JDK 21 installation; Maven must report Java 21 in `mvn -version`)
 - Maven 3.9+
 
 JavaFX 21 and AtlantaFX 2.1.0 are resolved from Maven Central. A separate JavaFX SDK or manual module-path configuration is not required. The interface uses AtlantaFX Primer Light as its base theme and project-specific CSS for its visual identity.
@@ -25,32 +25,38 @@ mvn clean package
 On Windows, `mvn clean package` also invokes Java 21 `jpackage` and creates a self-contained portable application at:
 
 ```text
-target/dist/BPlusTreeVisualizer/BPlusTreeVisualizer.exe
+release/BPlusTreeVisualizer/BPlusTreeVisualizer.exe
 ```
 
-Run the executable directly or distribute the entire `BPlusTreeVisualizer` directory. Do not copy the `.exe` alone because it requires the adjacent `app` and `runtime` directories. A ready-to-share build is also available at:
+Run the executable directly or distribute the entire `BPlusTreeVisualizer` directory. Do not copy the `.exe` alone because it requires the adjacent `app` and `runtime` directories. `mvn verify` additionally produces a distributable archive at:
 
 ```text
-release/BPlusTreeVisualizer/BPlusTreeVisualizer.exe
-release/BPlusTreeVisualizer-1.0.0-windows.zip
+target/BPlusTreeVisualizer-1.0.0-windows.zip
 ```
+
+Note: `jpackage` refuses to overwrite an existing output directory, so delete `release/` first if a previous build exists (and close the app, since Windows locks its files while running).
 
 ## Features
 
 - Insert and reject duplicate integer keys
 - Search with comparison and path steps
 - Delete with redistribution/borrow, merge, separator repair, and root shrink
+- Median-first rebalance that never worsens height or node count
 - Configurable B+ Tree order from 3 to 8
 - Automatic non-overlapping subtree layout
 - Distinct internal nodes, leaf nodes, parent edges, and linked-leaf edges
 - Direct algorithm checkpoints for traversal, insert, split, borrow, merge, and root changes
 - Immutable per-step tree snapshots with stable node IDs and exact edge/key highlighting
-- Deterministic play, pause, previous, next, restart, jump, and speed controls
+- Numbered step list with click-to-jump, deterministic play, pause, previous, next, restart, and speed controls
+- Skip-animation switch that jumps straight to the final frame
+- Sticky bottom bar showing the current sorted key sequence
 - Inline insertion input with full signed integer validation
 - 12 curated datasets for splits, merges, negative and long keys
 - Random insertion by quantity, with an advanced custom numeric range
-- Inline validation feedback, empty state, statistics, and comparison count
+- Inline validation feedback, empty states, statistics, and comparison count
+- Team info dialog with the algorithm reference source
 - Full invariant validation in the algorithm layer
+- Opens maximized on launch
 
 ## Project structure
 
@@ -83,7 +89,8 @@ Search, insert, and delete take `O(log n)` tree navigation time.
 
 ## Demonstration tips
 
-1. Choose **Split demo**, then insert additional nearby keys to show leaf and internal splits.
-2. Choose **Merge demo**, then delete `30` to demonstrate underflow repair.
-3. Use **Pause** and the previous/next controls while presenting each generated algorithm step.
-4. Drag the visualization surface or use its scrollbars when a large tree exceeds the viewport.
+1. Choose **Tách nút · nhiều tầng**, then insert additional nearby keys to show leaf and internal splits.
+2. Choose **Gộp nút · xóa khóa 30**, then delete `30` to demonstrate underflow repair.
+3. Use **Tạm dừng** and the previous/next controls while presenting each generated algorithm step.
+4. Turn on **Bỏ qua animation** to jump straight to the result when steps are already understood.
+5. Drag the visualization surface or use its scrollbars when a large tree exceeds the viewport.
